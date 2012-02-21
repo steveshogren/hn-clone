@@ -4,8 +4,9 @@ var requestHandlers = require("./requestHandlers");
 
 var handle = {}
 handle["/"] = requestHandlers.createNewPost;
-handle["/start"] = requestHandlers.createNewPost;
-handle["/upload"] = requestHandlers.uploadPost;
+handle["/createNewPost"] = requestHandlers.createNewPost;
+handle["/uploadPost"] = requestHandlers.uploadPost;
 handle["/showPost"] = requestHandlers.showPost;
+handle["/upvotePost"] = requestHandlers.upvotePost;
 
 server.start(router.route, handle);
