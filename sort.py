@@ -15,5 +15,8 @@ for id in r.smembers('allPosts'):
     print ' date from redis: ' + date
     date = datetime.fromtimestamp(int(date)/1000)
     diff = currentdate - date
-    print 'id: ' + id + ' votes: ' + votes + ' date: ' + date.isoformat() + '   minutes since last used: ' + str(diff.seconds/60)
+    minutesOld = str(diff.seconds/60) 
+    score = (votes-1)/(minutesOld+2)^1.8
+    print 'id: ' + id + ' votes: ' + votes + ' date: ' + date.isoformat() + '   minutes since last used: ' + minutesOld + ' score: ' + score
+    
     
