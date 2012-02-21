@@ -17,6 +17,24 @@ for id in r.smembers('allPosts'):
     diff = currentdate - date
     minutesOld = diff.seconds/60 
     score = (int(votes)+1)/pow(((minutesOld/60)+2), 1.8) 
-    print 'id: ' + id + ' votes: ' + votes + ' date: ' + date.isoformat() + '   hours since last used: ' + str(minutesOld/60) + ' score: ' + str(score)
+    score = int(round(score*10))
+    print 'id: ' + id + '  votes: ' + votes + '  date: ' + date.isoformat() + '  hours: ' + str(minutesOld/60) + '  score: ' + str(score)
     
+    #update the highest score
+    highestScore = r.get('highestscore')
+    if not highestScore:
+        highestScore = '0'
+    if int(highestScore) < score:
+        r.set('highestscore', score)
+    
+    #update the score -> id relationship (for sorting)
+    oldScore = r.get('post:'+id+':score')
+    if oldScore and int(oldScore) != score:
+        r.smove('score:'+int(oldScore), 'score:'+score, id)
+    else:
+        r.sadd('score:'+score, id)
+        
+#update the id -> score relationship (for future removal from sorted hashmap)
+    r.set('post:'+id+':score', score)
+   
     
