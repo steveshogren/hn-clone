@@ -1,9 +1,9 @@
 var querystring = require("querystring"),
-    fs = require("fs"),
+    url = require("url"),
     formidable = require("formidable"),
     redis = require("redis");
 
-function start(response) {
+exports.createNewPost = function (response) {
     console.log("Request handler 'start' was called.");
 
     var body = '<html>' +
@@ -24,19 +24,14 @@ function start(response) {
     response.end();
 }
 
-function upload(response, request) {
-    console.log("Request handler 'upload' was called.");
-
+exports.uploadPost = function (response, request) {
     var form = new formidable.IncomingForm();
-    console.log("about to parse");
     form.parse(request, function (error, fields, files) {
-        console.log("parsing done", fields);
-
         var client = redis.createClient();
         client.stream.on("connect", function () {
             client.incr('nextPost', function (err, id) {
                 client.set('post:' + id, JSON.stringify(fields.text), function () {
-                    var message = 'The post has been saved at <a href="/' + id + '">' + request.headers.host + '/' + id + '</a>';
+                    var message = 'The post has been saved at <a href="/showPost?id=' + id + '">' + request.headers.host + '/' + id + '</a>';
                     response.writeHead(200, {"Content-Type":"text/html"});
                     response.write("received message:<br/>");
                     response.write(message);
@@ -47,21 +42,22 @@ function upload(response, request) {
     });
 }
 
-function show(response) {
-    console.log("Request handler 'show' was called.");
-    fs.readFile("/tmp/test.png", "binary", function (error, file) {
-        if (error) {
-            response.writeHead(500, {"Content-Type":"text/plain"});
-            response.write(error + "\n");
+exports.showPost = function(response, request) {
+    var id = querystring.parse(url.parse(request.url).query)["id"];
+    var client = redis.createClient();
+    client.stream.on("connect", function () {
+        client.get('post:' + id, function (err, contents) {
+            if (!contents) {
+                response.writeHead(404);
+                response.write("post not found");
+                response.end();
+                return;
+            }
+            response.writeHead(200, {"Content-Type":"text/html"});
+            response.write("post:<br/>");
+            response.write(JSON.parse(contents.toString()));
             response.end();
-        } else {
-            response.writeHead(200, {"Content-Type":"image/png"});
-            response.write(file, "binary");
-            response.end();
-        }
+        })
     });
 }
 
-exports.start = start;
-exports.upload = upload;
-exports.show = show;
