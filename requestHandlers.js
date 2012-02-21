@@ -13,8 +13,11 @@ exports.createNewPostPage = function (response) {
         'charset=UTF-8" />' +
         '</head>' +
         '<body>' +
+        'Create new Posting: <br />' +
         '<form action="/uploadPost" method="post">' +
-        '<textarea name="text" rows="20" cols="60"></textarea>' +
+        'Title: <input type="text" name="title" /><br />' +
+        'Link: <input type="text" name="link" /><br />' +
+        'Text: <input type="text" name="text" /><br />' +
         '<input type="submit" value="Submit text" />' +
         '</form>' +
         '</body>' +
@@ -31,10 +34,9 @@ exports.uploadPost = function (response, request) {
         var client = redis.createClient();
         client.stream.on("connect", function () {
             client.incr('nextPost', function (err, id) {
-                updatePostText(id, JSON.stringify(fields.text), function () {
+                    post.updatePost(id, JSON.stringify(fields.title), JSON.stringify(fields.link), JSON.stringify(fields.text), function () {
                     var message = 'The post has been saved at <a href="/showPost?id=' + id + '">' + request.headers.host + '/' + id + '</a>';
                     response.writeHead(200, {"Content-Type":"text/html"});
-                    response.write("received message:<br/>");
                     response.write(message);
                     response.end();
                 })
@@ -59,7 +61,6 @@ exports.upvotePost = function (response, request) {
     var form = new formidable.IncomingForm();
     form.parse(request, function (error, fields, files) {
         var client = redis.createClient();
-//        console.log("fields: " + fields.id);
         client.stream.on("connect", function () {
             client.incr('post:' + fields.id + ":votes", function (err, votes) {
                 getPostDisplay(fields.id, function (body) {
@@ -86,15 +87,13 @@ function getPostDisplay(id, callback) {
             '<body>' +
             '<form action="/upvotePost" method="post">' +
             hiddenPostField +
-            '<input type="submit" value="Upvote" /> Vote id: ' + id + ' Votes: ' + foundPost.votes +
+            '<input type="submit" value="Upvote" /> Vote id: ' + id + '<br /> Votes: ' + foundPost.votes +
             '</form>' +
-//            '<form action="/updatePost" method="post">' +
-            '<textarea name="text" rows="20" cols="60">' + foundPost.link + '</textarea>' +
+            'Title: <input type="text" name="title" value="' + foundPost.title + '" /><br />' +
+            'Link: <input type="text" name="link" value="' + foundPost.link + '" /><br />' +
+            'Text: <input type="text" name="text" value="' + foundPost.text + '" /><br />' +
             hiddenPostField +
-//            '<input type="submit" value="Update text" />' +
-//            '</form>' +
-            'Submitted: ' + foundPost.dateSubmitted +
-            'Title: ' + foundPost.title +
+            'Submitted: ' + foundPost.dateSubmitted.toString() +
             '</body>' +
             '</html>';
         callback(body);
