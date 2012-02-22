@@ -37,8 +37,13 @@ exports.showMainPage = function (response, request) {
     var index = 0;
     var postList = "";
     var posts = new Array();
+    post.numberOfPosts(function(number) {
+        if (number == 0) {
+            view.mainPage(response, 'No posts cached, create some posts and then run: "python runSort.py" to cache them');
+            return;
+        }
+    });
     post.getSortedPosts(function (post, numberOfPosts) {
-        // still not displaying these in the right order
         posts.push(post);
         index++;
         if (numberOfPosts === index) {
@@ -52,7 +57,6 @@ exports.showMainPage = function (response, request) {
 function postSorter(a, b) {
     if (a.score === b.score) {
         if (a.votes === b.votes) {
-            // top three "javascript int to string" results...?
             if (a.id === b.id) {
                 return 0;
             } else if (a.id > b.id) {

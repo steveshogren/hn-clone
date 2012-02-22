@@ -14,6 +14,7 @@ exports.createNewPostPage = function (response) {
         'Text: <input type="text" name="text" /><br />' +
         '<input type="submit" value="Submit text" />' +
         '</form>' +
+        '<br /><a href="/">Main Page</a>' +
         '</body>' +
         '</html>';
 
@@ -27,7 +28,7 @@ exports.mainPage = function(response, postList) {
         '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
         '</head>' + '<body>' +
         postList +
-        '</body></html>';
+        '<br /><a href="/createNewPost">Create A New Post</a></body></html>';
     response.writeHead(200, {"Content-Type":"text/html"});
     response.write(body);
     response.end();

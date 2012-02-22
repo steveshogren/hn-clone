@@ -47,7 +47,20 @@ function Post(id, title, link, text, votes, dateSubmitted, score) {
         });
     }
 }
-
+exports.numberOfPosts = function (callback) {
+    var client = redis.createClient();
+    client.stream.on("connect", function () {
+            client.lrange("sortedPosts", 0, 35, function (err, posts) {
+                    if (! posts) { 
+                        postCount = 0; 
+                    } else {
+                        postCount = posts.length;
+                    }
+                    
+                    callback(postCount);
+        })
+    });
+}; 
 exports.createPost = function (title, link, text, callback) {
     var client = redis.createClient();
     client.stream.on("connect", function () {
@@ -55,7 +68,7 @@ exports.createPost = function (title, link, text, callback) {
             updatePost(id, title, link, text, callback);
         })
     });
-}
+};
 
 function updatePost(id, title, link, text, callback) {
     var client = redis.createClient();
