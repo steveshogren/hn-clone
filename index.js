@@ -1,10 +1,11 @@
-var server = require("./server");
-var router = require("./router");
-var requestHandlers = require("./requestHandlers");
+var server = require("./server"),
+    router = require("./router"),
+    requestHandlers = require("./requestHandlers"),
+    view = require("./view");
 
 var handle = {}
 handle["/"] = requestHandlers.showMainPage;
-handle["/createNewPost"] = requestHandlers.createNewPostPage;
+handle["/createNewPost"] = view.createNewPostPage;
 handle["/createPost"] = requestHandlers.createPost;
 handle["/showPost"] = requestHandlers.showPost;
 handle["/upvotePost"] = requestHandlers.upvotePost;
