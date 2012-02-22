@@ -10,7 +10,7 @@ exports.createPost = function (response, request) {
     var form = new formidable.IncomingForm();
     form.parse(request, function (error, fields, files) {
         post.createPost(JSON.stringify(fields.title), JSON.stringify(fields.link), JSON.stringify(fields.text), function (post) {
-            view.getPostDisplay(response, post);
+                view.redirectToPost(response, post.id);
         })
     });
 }
@@ -20,7 +20,7 @@ exports.upvotePost = function (response, request) {
     form.parse(request, function (error, fields, files) {
         post.getPost(fields.id, function (foundPost) {
             foundPost.upvote(function () {
-                view.getPostDisplay(response, foundPost);
+                view.redirectToPost(response, foundPost.id);
             })
         })
     })
