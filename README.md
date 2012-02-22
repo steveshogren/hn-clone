@@ -3,7 +3,13 @@
 A rough pass at making a redis-backed Hacker News clone.
 
 I used node.js for serving requests and a python script 
-to be run periodically to score and rank posts.
+to be run periodically to score and rank posts. I did
+not think that node was good tool for running to calculate
+and cache the score of the posts, because that could cause
+blocking of requests. As it is, the node site expects the 
+cached values to be there, and leaves it to the administrator
+so see that the python script is timed and run at valuable
+intervals.
 
 ## Installing Dependencies: 
     $ npm install formidable
@@ -18,7 +24,8 @@ to be run periodically to score and rank posts.
     $ node index.js
 * Browse to localhost:8888 
 * Create a few posts, and upvote them
-* Sort and cache posts
+* Sort and cache posts with python script
+    
     $ python runSort.py
 
 ## Caveats
