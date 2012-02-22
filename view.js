@@ -33,6 +33,14 @@ exports.mainPage = function(response, postList) {
     response.end();
 }
 
+exports.mainPagePostLine = function(post) {
+    line = '<form action="/upvotePost" method="post">' +
+        '<a href="' + post.link + '">' + post.title + '</a>' +
+        '<input type="hidden" name="id" value="' + post.id + '">' +
+        '  <a href="/showPost?id=' + post.id + '">Comments</a> Vote id: ' + post.id + ' Votes: ' + post.votes +
+    '</form>';
+    return line;
+}
 exports.getPostDisplay = function(response, post) {
     if (post.id === 0) {
         response.writeHead(200, {"Content-Type":"text/html"});

@@ -34,33 +34,17 @@ exports.showPost = function (response, request) {
 }
 
 exports.showMainPage = function (response, request) {
-    var client = redis.createClient();
-    client.stream.on("connect", function () {
-        client.lrange("sortedPosts", 0, 34, function (err, postIds) {
-            if (err) {
-                response.writeHead(500, {"Content-Type":"text/html"});
-                response.write(err);
-                response.end();
-                return;
+    var index = 0;
+    var postList = "";
+    post.getSortedPosts(function (postId, numberOfPosts) {
+        // still not displaying these in the right order
+        post.getPost(postId, function (post) {
+            postList += view.mainPagePostLine(post);
+            index++;
+            if (numberOfPosts === index) {
+                view.mainPage(response, postList);
             }
-            var numberOfPosts = postIds.length;
-            var count = 0;
-            var postList = "";
-            postIds.forEach(function (postId, i) {
-                // not displaying these in the right order
-                post.getPost(postId, function (post) {
-                    postList += '<form action="/upvotePost" method="post">' +
-                        '<a href="' + post.link + '">' + post.title + '</a>' +
-                        '<input type="hidden" name="id" value="' + post.id + '">' +
-                        '  <a href="/showPost?id='+post.id+'">Comments</a> Vote id: ' + post.id + ' Votes: ' + post.votes +
-                        '</form>';
-                    count++;
-                    if (numberOfPosts === count) {
-                        view.mainPage(response, postList);
-                    }
-                })
-            })
         })
-    });
+    })
 }
 
