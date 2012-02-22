@@ -14,7 +14,7 @@ exports.createNewPostPage = function (response) {
         '</head>' +
         '<body>' +
         'Create new Posting: <br />' +
-        '<form action="/uploadPost" method="post">' +
+        '<form action="/createPost" method="post">' +
         'Title: <input type="text" name="title" /><br />' +
         'Link: <input type="text" name="link" /><br />' +
         'Text: <input type="text" name="text" /><br />' +
@@ -28,13 +28,13 @@ exports.createNewPostPage = function (response) {
     response.end();
 }
 
-exports.uploadPost = function (response, request) {
+exports.createPost = function (response, request) {
     var form = new formidable.IncomingForm();
     form.parse(request, function (error, fields, files) {
         var client = redis.createClient();
         client.stream.on("connect", function () {
             client.incr('nextPost', function (err, id) {
-                    post.updatePost(id, JSON.stringify(fields.title), JSON.stringify(fields.link), JSON.stringify(fields.text), function () {
+                post.updatePost(id, JSON.stringify(fields.title), JSON.stringify(fields.link), JSON.stringify(fields.text), function () {
                     var message = 'The post has been saved at <a href="/showPost?id=' + id + '">' + request.headers.host + '/' + id + '</a>';
                     response.writeHead(200, {"Content-Type":"text/html"});
                     response.write(message);
@@ -42,18 +42,6 @@ exports.uploadPost = function (response, request) {
                 })
             })
         });
-    });
-}
-
-exports.updatePost = function (request, response) {
-    var form = new formidable.IncomingForm();
-    form.parse(request, function (error, fields, files) {
-        post.updatePostText(id, JSON.stringify(fields.text), function () {
-            var message = 'The post has been saved at <a href="/showPost?id=' + id + '">' + request.headers.host + '/' + id + '</a>';
-            response.writeHead(200, {"Content-Type":"text/html"});
-            response.write(message);
-            response.end();
-        })
     });
 }
 
@@ -107,5 +95,32 @@ exports.showPost = function (response, request) {
         response.write(body);
         response.end();
     })
+}
+
+exports.showMainPage = function (response, request) {
+    var client = redis.createClient();
+    client.stream.on("connect", function () {
+        client.lrange("sortedPosts", 0, 34, function (err, postIds) {
+            if (err) {
+                response.writeHead(404, {"Content-Type":"text/html"});
+                response.write("Something is wrong");
+                response.end();
+                console.log(err);
+                return;
+            }
+            var body = '<html>' + '<head>' +
+                '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
+                '</head>' + '<body>';
+            postIds.forEach(function (postId, i) {
+                body += postId
+                console.log(body);
+            })
+            body += '</body></html>';
+            console.log(body);
+            response.writeHead(200, {"Content-Type":"text/html"});
+            response.write(body);
+            response.end();
+        })
+    });
 }
 
