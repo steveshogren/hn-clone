@@ -111,15 +111,21 @@ exports.showMainPage = function (response, request) {
             var body = '<html>' + '<head>' +
                 '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
                 '</head>' + '<body>';
+            var numberOfPosts = postIds.length;
+            var count = 0;
             postIds.forEach(function (postId, i) {
-                body += postId
-                console.log(body);
+                post.getPost(postId, function (post) {
+                    count++;
+                    body += '<a href="' + post.link + '">' + post.title + "</a><br />";
+                    if (numberOfPosts == count) {
+                        body += '</body></html>';
+//                        console.log(body);
+                        response.writeHead(200, {"Content-Type":"text/html"});
+                        response.write(body);
+                        response.end();
+                    }
+                })
             })
-            body += '</body></html>';
-            console.log(body);
-            response.writeHead(200, {"Content-Type":"text/html"});
-            response.write(body);
-            response.end();
         })
     });
 }

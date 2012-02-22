@@ -10,6 +10,14 @@ def postVotes(id):
     return 'post:' + str(id) + ':votes'
 
 
+def postTitle(id):
+    return 'post:' + str(id) + ':title'
+
+
+def postLink(id):
+    return 'post:' + str(id) + ':link'
+
+
 def postScore(id):
     return 'post:' + str(id) + ':score'
 
@@ -73,7 +81,6 @@ def updateScoreToIdRelationship(r, id, score):
 
 
 def sortAllPosts():
-    currentdate = datetime.now()
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
     for id in r.smembers(allPosts()):
         votes = r.get(postVotes(id))
@@ -82,12 +89,11 @@ def sortAllPosts():
         else:
             votes = int(votes)
 
-        minutesOld = getPostAgeInMinutes(r, id, currentdate)
+        minutesOld = getPostAgeInMinutes(r, id, datetime.now())
         score = calculateScore(votes, minutesOld)
-#        print 'id: ' + id + '  votes: ' + str(votes) + '  min: ' + str(minutesOld) + '  score: ' + str(score)
+        #        print 'id: ' + id + '  votes: ' + str(votes) + '  min: ' + str(minutesOld) + '  score: ' + str(score)
 
         updateHighestScore(r, score)
-
         updateScoreToIdRelationship(r, id, score)
 
 
