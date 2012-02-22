@@ -13,11 +13,11 @@ intervals.
 
 ## Installing Dependencies: 
     $ npm install formidable
-(https://github.com/mranney/node_redis)
-    
+Install node_redis https://github.com/mranney/node_redis
+
     $ npm install redis 
-(redis for python https://github.com/andymccurdy/redis-py)
-    
+Install redis for python https://github.com/andymccurdy/redis-py
+
     $ sudo pip install redis 
 
 ## To use:
@@ -25,8 +25,9 @@ intervals.
 * Browse to localhost:8888 
 * Create a few posts, and upvote them
 * Sort and cache posts with python script
-    
-    $ python runSort.py
+
+
+    $ python runSort.py 
 
 ## Caveats
 There is no validation of form values, so it is possible to 
