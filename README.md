@@ -28,3 +28,7 @@ The point of this was not to demonstrate web security and
 validation techniques, but to demonstrate an ability to use 
 node.js and redis to build a working site.
 
+Additionally, the lack of any sort of any nice ui and poor
+techniques like html redirects were used in the interest of
+time.
+
