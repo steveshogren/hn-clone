@@ -37,5 +37,5 @@ validation techniques, but to demonstrate an ability to use
 node.js and redis to build a working site.
 
 In the interest of time, I didn't pay much attention to the 
-quality of the UI and did thinkgs like using html redirects.
+quality of the UI and did things like using html redirects.
 
