@@ -36,15 +36,39 @@ exports.showPost = function (response, request) {
 exports.showMainPage = function (response, request) {
     var index = 0;
     var postList = "";
-    post.getSortedPosts(function (postId, numberOfPosts) {
+    var posts = new Array();
+    post.getSortedPosts(function (post, numberOfPosts) {
         // still not displaying these in the right order
-        post.getPost(postId, function (post) {
-            postList += view.mainPagePostLine(post);
-            index++;
-            if (numberOfPosts === index) {
-                view.mainPage(response, postList);
-            }
-        })
+        posts.push(post);
+        index++;
+        if (numberOfPosts === index) {
+            posts.sort(postSorter).forEach(function (post) {
+                postList += view.mainPagePostLine(post);
+            });
+            view.mainPage(response, postList);
+        }
     })
+}
+function postSorter(a, b) {
+    if (a.score === b.score) {
+        if (a.votes === b.votes) {
+            // top three "javascript int to string" results...?
+            if (a.id === b.id) {
+                return 0;
+            } else if (a.id > b.id) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else if (a.votes > b.votes) {
+            return -1;
+        } else {
+            return 1;
+        }
+    } else if (a.score > b.score) {
+        return -1;
+    } else {
+        return 1;
+    }
 }
 

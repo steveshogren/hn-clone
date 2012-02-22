@@ -37,7 +37,8 @@ exports.mainPagePostLine = function(post) {
     line = '<form action="/upvotePost" method="post">' +
         '<a href="' + post.link + '">' + post.title + '</a>' +
         '<input type="hidden" name="id" value="' + post.id + '">' +
-        '  <a href="/showPost?id=' + post.id + '">Comments</a> Vote id: ' + post.id + ' Votes: ' + post.votes +
+        '  <a href="/showPost?id=' + post.id + '">Comments</a> ' +
+        ' Vote id: ' + post.id + ' Votes: ' + post.votes + '  score: ' + post.score +
     '</form>';
     return line;
 }

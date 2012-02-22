@@ -1,5 +1,8 @@
 var redis = require("redis");
 
+/*
+ Constants, any other name...
+ */
 function nextPost() {
     return 'nextPost';
 }
@@ -18,17 +21,21 @@ function postLink(id) {
 function postDate(id) {
     return 'post:' + id + ':date';
 }
+function postScore(id) {
+    return 'post:' + id + ':score';
+}
 function allPosts() {
     return 'allPosts';
 }
 
-function Post(id, title, link, text, votes, dateSubmitted) {
+function Post(id, title, link, text, votes, dateSubmitted, score) {
     this.id = id;
     this.link = link;
     this.title = title;
     this.text = text;
     this.votes = votes;
     this.dateSubmitted = dateSubmitted;
+    this.score = score;
 
     this.upvote = function (callback) {
         var id = this.id;
@@ -78,32 +85,37 @@ exports.getSortedPosts = function (callback) {
                 response.end();
                 return;
             }
-//            console.log(postIds);
             var numberOfPosts = postIds.length;
-            for (var i = 0; i < numberOfPosts; i++) {
-                callback(postIds[i], numberOfPosts);
-            }
+            postIds.forEach(function (postId) {
+                getPost(postId, function (post) {
+                    callback(post, numberOfPosts);
+                })
+            });
         })
-    });
+    })
 };
+
 function getPost(id, callback) {
     var client = redis.createClient();
     client.stream.on("connect", function () {
         client.get(postText(id), function (err, text) {
             client.get(postVotes(id), function (err, votes) {
                 client.get(postTitle(id), function (err, title) {
-                    client.get(postLink(id), function (err, link) {
-                        client.get(postDate(id), function (err, date) {
-                            votes = parseInt(votes);
-                            text = parseString(text);
-                            title = parseString(title);
-                            date = parseDate(date);
-                            link = parseDate(link);
-                            if (link === "") {
-                                id = 0;
-                            }
-                            var post = new Post(id, title, link, text, votes, date);
-                            callback(post);
+                    client.get(postScore(id), function (err, score) {
+                        client.get(postLink(id), function (err, link) {
+                            client.get(postDate(id), function (err, date) {
+                                votes = parseInt(votes);
+                                score = parseInt(score);
+                                text = parseString(text);
+                                title = parseString(title);
+                                date = parseDate(date);
+                                link = parseDate(link);
+                                if (link === "") {
+                                    id = 0;
+                                }
+                                var post = new Post(id, title, link, text, votes, date, score);
+                                callback(post);
+                            })
                         })
                     })
                 })
@@ -119,6 +131,7 @@ function parseInt(value) {
     }
     return value
 }
+
 function parseDate(value) {
     if (!value) {
         value = new Date(0);
@@ -127,6 +140,7 @@ function parseDate(value) {
     }
     return value
 }
+
 function parseString(value) {
     if (!value) {
         value = "";
@@ -135,6 +149,7 @@ function parseString(value) {
     }
     return value
 }
+
 exports.updatePost = updatePost;
 exports.getPost = getPost;
 
