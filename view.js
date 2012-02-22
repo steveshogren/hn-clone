@@ -1,5 +1,4 @@
 
-
 exports.createNewPostPage = function (response) {
     var body = '<html>' +
         '<head>' +
@@ -43,6 +42,7 @@ exports.mainPagePostLine = function(post) {
     '</form>';
     return line;
 }
+
 exports.getPostDisplay = function(response, post) {
     if (post.id === 0) {
         response.writeHead(200, {"Content-Type":"text/html"});
@@ -74,13 +74,11 @@ exports.getPostDisplay = function(response, post) {
     response.end();
 }
 
-
 exports.redirectToPost = function(response, postId) {
     var body = '<html>' + '<head>' +
         '<meta http-equiv="REFRESH" content="0;url=/showPost?id=' + postId + '" />' +
         '</head>' + '<body>' +
         '</body></html>';
-    //response.writeHead(200, {"Content-Type":"text/html"});
     response.write(body);
     response.end();
 }

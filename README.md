@@ -8,8 +8,10 @@ to be run periodically to score and rank posts.
 ## Installing Dependencies: 
     $ npm install formidable
 (https://github.com/mranney/node_redis)
+    
     $ npm install redis 
 (redis for python https://github.com/andymccurdy/redis-py)
+    
     $ sudo pip install redis 
 
 ## To use:

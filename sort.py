@@ -91,7 +91,6 @@ def sortAllPosts():
 
         minutesOld = getPostAgeInMinutes(r, id, datetime.now())
         score = calculateScore(votes, minutesOld)
-        #        print 'id: ' + id + '  votes: ' + str(votes) + '  min: ' + str(minutesOld) + '  score: ' + str(score)
 
         updateHighestScore(r, score)
         updateScoreToIdRelationship(r, id, score)
@@ -108,7 +107,6 @@ def buildTopPostLists():
             if id:
                 r.rpush(sortedPosts(), id)
 
-#    print 'sorted: ' + str(r.lrange(sortedPosts(), 0, -1))
 
 if __name__ == "__main__":
     import doctest
