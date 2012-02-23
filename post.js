@@ -1,7 +1,7 @@
 var redis = require("redis");
 
 /*
- Constants, any other name...
+ Constants for talking to redis
  */
 function nextPost() {
     return 'nextPost';
